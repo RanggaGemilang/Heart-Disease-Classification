@@ -1,0 +1,2871 @@
+---
+title: Heart Disease Classification
+subtitle: Logistic Regression & kNN
+output: 
+  html_document:
+    code_folding: "hide"
+    includes:
+      after_body: footer.html
+---
+
+<style type="text/css">
+body{ /* Normal  */
+    font-size: 18px;
+    color: White;
+    font-family: AGaramondPro,Adobe Garamond Pro,garamond,Times,serif;
+    background-color: #2C343C;
+    text-align: justify;
+    }
+h1.title { /* Title */
+    font-size: 30px;
+    color: #D76662;
+    text-align: center;
+    font-family: AGaramondPro,Adobe Garamond Pro,garamond,Times,serif;
+    font-weight: bold;
+    margin-bottom: 2px;
+    }
+h3.subtitle { /* Subtitle */
+    font-size: 20px;
+    color: #DFC18F;
+    text-align: center;
+    font-family: AGaramondPro,Adobe Garamond Pro,garamond,Times,serif;
+    font-weight: bold;
+    font-style:italic;
+    margin-top: 5px;
+    margin-bottom: 30px;
+    }
+td {  /* Table  */
+    font-size: 14px;
+    color: #Black;
+    }
+h1 { /* Header 1 */
+    font-size: 22px;
+    color: #DFC18F;
+    font-family: Cardo;
+    font-weight: bold;
+    }
+h2 { /* Header 2 */
+    font-size: 20px;
+    color: #FFE5DB;
+    font-family: Cardo;
+    font-weight: bold;
+    }
+h3 { /* Header 3 */
+    font-size: 18px;
+    color: #B8332E;
+    font-family: Cardo;
+    font-weight: bold;
+    font-style:italic;
+    }
+p.caption {
+    font-size: 0.9em;
+    font-style: italic;
+    color: grey;
+    margin-right: 10%;
+    margin-left: 30%;  
+    text-align: justify;
+    }
+.btn-default {
+    color: #D76662;
+    background-color: #2C343C;
+    border-color: #2C343C;
+    }
+.btn-default.focus, .btn-default:focus {
+    color: #D76662;
+    background-color: #333D47;
+    border-color: #333D47;
+    }
+.btn.focus, .btn:focus, .btn:hover {
+    color: #D76662;
+    background-color: #333D47;
+    border-color: #333D47;
+    }
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 4px;
+    line-height: 1.42857143;
+    border-top: none;
+    }
+.pagedtable-not-empty .pagedtable-footer {
+    border-top: 2px Solid #DFC18F;
+    }
+.pagedtable-wrapper {
+    border: #2C343C;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    }
+.pagedtable th {
+    padding: 0 5px 0 5px;
+    border: none;
+    border-bottom: Black;
+    min-width: 45px;
+    }
+.pagedtable .even {
+    background-color: #333D47;
+    }
+a.pagedtable-index-current {
+    text-decoration: none;
+    font-weight: bold;
+    color: #DFC18F;
+    }
+a.pagedtable-index:hover {
+    text-decoration: none;
+    font-weight: bold;
+    color: #DFC18F;
+    }
+.pagedtable-index {
+    width: 30px;
+    display: inline-block;
+    text-align: center;
+    border: 0;
+    color: White;
+    }
+a.pagedtable-index-nav {
+    cursor: pointer;
+    padding: 0 5px 0 5px;
+    float: right;
+    border: 0;
+    color: #DFC18F;
+    }
+a.pagedtable-index-nav-disabled {
+    cursor: default;
+    text-decoration: none;
+    color: #999;
+    }
+.pagedtable th {
+    padding: 0 5px 0 5px;
+    border: none;
+    border-bottom: 2px solid #000000;
+    min-width: 45px;
+    }
+.pagedtable-header-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #DFC18F;
+    }
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #D76662;
+    background-color: #333D47;
+    }
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #D76662;
+    background-color: #333D47;
+    }
+a {
+    color: #D76662;
+    text-decoration: none;
+    }
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #862421;
+    border-color: #862421;
+    }
+.tocify {
+    width: 20%;
+    max-height: 90%;
+    overflow: auto;
+    margin-left: 2%;
+    position: fixed;
+    border: 1px solid #2C343C;
+    border-radius: 6px;
+    }
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #2C343C;
+    border: 0;
+    }
+g.hovertext > path {
+    opacity: 0.6;
+    }
+code {
+    color: #FFE5DB;
+    background-color: #333D47;
+    }
+.hljs-string {
+    color: #DFC18F;
+    }
+.hljs-keyword {
+    color: #D76662;
+    font-weight: bold;
+    }
+.hljs-literal {
+    color: #DFC18F;
+    }   
+.hljs-number {
+    color: #D76662;
+    }
+
+</style>
+
+
+```{css, echo=F}
+.code-block {
+  background-color: #333D47;
+  border: #333D47;
+  color: White;
+}
+.bg-output {
+  background-color: #333D47;
+  border: #333D47;
+  color: White;
+}
+.fold-show {
+  background-color: #333D47;
+  border: #333D47;
+  color: White;
+}
+```
+
+```{r setup, include = F, echo = F}
+knitr::opts_chunk$set(class.source = "code-block", class.output = "bg-output", warning = FALSE, message = FALSE)
+rm(list = ls())
+options(scipen = 9999)
+```
+
+```{r, include = F, echo = F}
+library(moments)
+library(tidyverse)
+library(htmlwidgets)
+library(scales)
+library(gridExtra)
+library(extrafont)
+library(scales)
+library(htmltools)
+library(lubridate)
+library(rmarkdown)
+library(knitr)
+library(highcharter)
+library(data.table)
+library(ggplot2)
+library(car)
+library(ggpubr)
+library(scales)
+library(gtools)
+library(echarts4r)
+library(reshape2)
+library(glue)
+library(plotly)
+library(caret)
+library(class)
+library(knitr)
+library(pROC)
+library(ggfx)
+```
+
+
+```{r, echo = F}
+thm <- hc_theme_merge(
+  hc_theme_tufte(),
+  hc_theme(
+    chart = list(
+      backgroundColor = "#2C343C"
+    ),
+    yAxis = list(
+      gridLineWidth = 0,
+      minorTickLength = 0,
+      tickLength = 0
+    ),
+    xAxis = list(
+      gridLineWidth = 0
+    ),
+    title = list(
+      style = list(fontSize = 22,
+                   fontStyle = "italic",
+                   fontFamily = "Cardo",
+                   color = "White")),
+    series = list(
+      pointWidth = 50
+    )
+    ))
+```
+
+<center>
+<img src="https://medisimaging.com/wp-content/uploads/2022/05/beating-heart-reduced2-1.gif" width="350" height="250"/>
+</center>
+
+# Introduction
+
+Did you know? someone has a heart attack every 40 seconds in the United States. And in the same region, about 647,000 people die from heart disease every year. Heart disease is the leading cause of death for men, women, and people of most racial and ethnic groups until now.
+
+In this project, we want to analyze about the cause of heart attack and also we want to create a model that can be useful to predict the heart disease event. The dataset that we're going to use is the _Heart Disease Data Set_ from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Heart+Disease). In which the patients data itself was collected from **Cleveland, Hungary, Switzerland, and Long Beach**.
+
+To summarize our objectives, here are what we're going to do in this dataset:
+
+* Deep **Exploratory Data Analysis** on our independent and dependent variables.
+* Create **Machine Learning** models.
+* Perform **prediction** on unseen data using our models.
+* **Evaluate** our models performance.
+* **Choose the best model**.
+
+# Understanding our Data {.tabset .tabset-fade .tabset-pills}
+
+Before we’re doing our Exploratory Data Analysis, we will examine our dataset first to see if there are any anomalies that we can fix within the dataset. It is important that insights are only as good as the data that informs them. This means it’s vital for the data to be clean and in the shape of usable form.
+
+## Description
+
+There are 14 attributes in this dataset and here are their descriptions:
+
+* `Age`: Patient's Age in years.
+* `Sex`: Patient's Gender. (M = **Male**, F = **Female**)
+* `ChestPainType`: Chest Pain type. (4 values: **ATA, NAP, ASY, TA**)
+* `RestingBP`: resting Blood Pressure. ( _in mm Hg_ )
+* `Cholesterol`: Serum Cholesterol. ( _in mg/dl_ )
+* `FastingBS`: Fasting Blood Sugar > _120 mg/dl_. (0 = **True**, 1 = **False**)
+* `RestingECG`: resting Electroencephalographic result. (values: **Normal, ST, LVH**)
+* `MaxHR`: Maximum Heart Rate achieved.
+* `ExerciseAngina`: Exercise induced Angina. (N = **No**, Y = **Yes**)
+* `Oldpeak`: ST Depression induced by Exercise relative to rest.
+* `ST_Slope`: Slope of the peak exercise ST segment. (values: **Up, Flat, Down**)
+* `HeartDisease:`: Heart Disease occured. (0 = **No**, 1 = **Yes**)
+
+## Table Preview
+
+```{r}
+heart <- read.csv("heart.csv")
+rmarkdown::paged_table(heart)
+```
+
+## Data Wrangling
+
+* Check the **data types**:
+
+```{r}
+glimpse(heart)
+```
+As demonstrated above, our variables data types are still not in the right type. 
+* Change the **data types**:
+
+```{r, class.source = "fold-show"}
+heart <- 
+  heart %>% 
+  mutate_at(vars(Sex, ChestPainType, FastingBS, RestingECG, ExerciseAngina, ST_Slope), as.factor) %>% 
+  mutate(Sex = case_when(
+    Sex == "M" ~ "Male",
+    Sex == "F" ~ "Female"),
+    FastingBS = case_when(
+    FastingBS == "0" ~ "< 120 mg/dl",
+    FastingBS == "1" ~ "> 120 mg/dl"),
+    ExerciseAngina = case_when(
+    ExerciseAngina == "N" ~ "No",
+    ExerciseAngina == "Y" ~ "Yes"))
+```
+
+* Check for **missing values**:
+
+```{r}
+colSums(is.na(heart))
+```
+There are no missing values within our dataset.
+
+## {-}
+
+# Exploratory Data Analysis
+
+Exploratory data analysis (EDA) involves using graphics and visualizations to explore and analyze a data set. The goal is to explore, investigate and learn the data variables within our dataset.
+
+## A. Categorical Variables Distribution {.tabset .tabset-fade .tabset-pills}
+
+From the inspection on **Data Wrangling** step earlier, these are all our _categorical variables_ and their distribution:
+
+### Chest Pain
+
+```{r}
+heart_cp <- 
+  heart %>% 
+  select(ChestPainType) %>%
+  group_by(ChestPainType) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_cp %>% 
+  e_charts(x = ChestPainType) %>% 
+  e_pie(total,
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 1, 0, 0, 0,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#FFE5DB' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#FFE5DB' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+        ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>%
+  e_title(text = "Chest Pain Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga3.json")
+```
+
+★ <span style="color:#FFE5DB">**ASY**</span> takes the majority of the `ChestPainType` distribution. (<span style="color:#DFC18F">54.03%</span>)
+
+★ <span style="color:#FFE5DB">**ASY**</span> stands for _Asymptomatic_ which means no symptoms or when a patient have an illness or condition (such as early stage high blood pressure or glaucoma) but do not have symptoms of it. 
+
+### Gender
+
+```{r}
+heart_sex <- 
+  heart %>% 
+  select(Sex) %>%
+  group_by(Sex) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_sex %>% 
+  e_charts(x = Sex) %>% 
+  e_pie(total, 
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+    ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>% 
+  e_title(text = "Gender Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+ 
+★ <span style="color:#FFE5DB">**Male**</span> patient takes the majority of the `Sex` distribution. (<span style="color:#DFC18F">78.98%</span>)
+
+### Fasting Blood Sugar
+
+```{r}
+heart_fbs <- 
+  heart %>% 
+  select(FastingBS) %>%
+  group_by(FastingBS) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_fbs %>% 
+  e_charts(x = FastingBS) %>% 
+  e_pie(total,
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+    ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>% 
+  e_title(text = "Fasting Blood Sugar Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+
+★ A fasting blood sugar level less than <span style="color:#DFC18F">100 mg/dL</span> (<span style="color:#DFC18F">5.6 mmol/L</span>) is considered <span style="color:#FFE5DB">**normal**</span>. 
+
+★ A fasting blood sugar level from <span style="color:#DFC18F">100 to 125 mg/dL</span> (<span style="color:#DFC18F">5.6 to 6.9 mmol/L</span>) is considered <span style="color:#FFE5DB">**pre-diabetes**</span>. 
+
+★ If it's <span style="color:#DFC18F">126 mg/dL</span> (<span style="color:#DFC18F">7 mmol/L</span>) or higher on two separate tests, means a person have <span style="color:#FFE5DB">**diabetes**</span>. 
+
+★ Majority of patients still have <span style="color:#FFE5DB">**normal**</span> and <span style="color:#FFE5DB">**pre-diabetes**</span> conditions. (<span style="color:#DFC18F">76.69%</span>)
+
+### Resting ECG
+
+```{r}
+heart_rtcg <- 
+  heart %>% 
+  select(RestingECG) %>%
+  group_by(RestingECG) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_rtcg %>% 
+  e_charts(x = RestingECG) %>% 
+  e_pie(total,
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#FFE5DB' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+        ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>% 
+  e_title(text = "Resting Electrocardiogram Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+
+★ <span style="color:#FFE5DB">**Normal**</span>: your Heart rate and Rythm is normal and consistent.
+
+★ <span style="color:#FFE5DB">**ST**</span>: T wave inversions and/or ST elevation or depression of more than <span style="color:#DFC18F">0.05 mV</span>.
+
+★ <span style="color:#FFE5DB">**LVH**</span>: showing probable or definite left ventricular hypertrophy by Estes' criteria.
+
+★ Most of people still have a <span style="color:#FFE5DB">**Normal**</span> `RestingECG` results. (<span style="color:#DFC18F">60.13%</span>)
+
+### ST Slope
+
+```{r}
+heart_slp <- 
+  heart %>% 
+  select(ST_Slope) %>%
+  group_by(ST_Slope) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_slp %>% 
+  e_charts(x = ST_Slope) %>% 
+  e_pie(total,
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#FFE5DB' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+        ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>%
+  e_title(text = "ST Slope Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+
+★ Up/<span style="color:#FFE5DB">**Upslopping**</span>: upsloping ST‐segment depression is associated with an increased risk of coronary artery disease.
+
+★ Down/<span style="color:#FFE5DB">**Downsloping**</span>: downsloping ST-segment depression is a common manifestation of severe myocardial ischemia.
+
+★ <span style="color:#FFE5DB">**Flat**</span>: The normal ST-segment is flat and isoelectric.
+
+★ The patient distribution for <span style="color:#FFE5DB">**Flat**</span> and <span style="color:#FFE5DB">**Upslopping**</span> `ST-Slope` are pretty even< (<span style="color:#DFC18F">50% vs 43%</span>) while <span style="color:#FFE5DB">**Downsloping**</span> `ST-Slope` takes the minority role. (<span style="color:#DFC18F">only 7%</span>)
+
+### Exercise Angina
+
+```{r}
+heart_exng <- 
+  heart %>% 
+  select(ExerciseAngina) %>%
+  group_by(ExerciseAngina) %>%
+  summarize(total = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(-total))
+
+heart_exng %>% 
+  e_charts(x = ExerciseAngina) %>% 
+  e_pie(total,
+        roseType = "radius",
+        itemStyle = list(
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+    ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>% 
+    e_title(text = "Exercise Angina Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+
+★ `ExerciseAngina` is a pain in the chest that comes on with exercise, stress, or other things that make the heart work harder. 
+
+★ The distributions are pretty even for the people who having an **angina or not**. (<span style="color:#DFC18F">60% vs 40%</span>)
+
+### {-}
+
+## B. Numerical Variables Distribution {.tabset .tabset-fade .tabset-pills}
+
+Befor we go into the data distribution, we will be analyzing the **Pearson Correlation** between all of our numerical variables first to see if there any <u>initial multicollinearity</u>.
+
+```{r, fig.align='center'}
+heart_num <- heart %>% 
+  select(Age, RestingBP, Cholesterol, MaxHR, Oldpeak, HeartDisease)
+
+cormat <- round(cor(heart_num),2)
+
+get_lower_tri<-function(cormat){
+  cormat[upper.tri(cormat)] <- NA
+  return(cormat)
+  }
+
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+}
+
+lower_tri <- get_lower_tri(cormat)
+
+heart_cor_melt <- reshape2::melt(lower_tri, na.rm = TRUE)
+heart_cor_melt <- heart_cor_melt %>% 
+  mutate(label = glue("{Var1} ~ {Var2}"))
+
+ggplot(heart_cor_melt,aes(Var1, Var2, text = label)) +
+  geom_tile(aes(fill = value)) +
+  geom_text(aes(label = round(value, 1)), alpha=0.5, size = 3, color = "White") + 
+  scale_fill_gradientn(colors = c("#FFE5DB","#E08F83","#B8332E"),
+                      values = rescale(c(-1,0,1)),
+                      limits = c(-1,1)) +
+  labs(x = NULL,
+      y = NULL,
+      fill = "Pearson Corr:") +
+  theme(legend.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        plot.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        panel.background = element_rect(fill = "#2C343C"),
+        panel.grid = element_line(colour = "#2C343C"),
+        panel.grid.major.x = element_line(colour = "#2C343C"),
+        panel.grid.minor.x = element_line(colour = "#2C343C"),
+        legend.title = element_text(colour = "#DFC18F", face ="bold", family = "Times New Roman"),
+        legend.text = element_text(colour = "#DFC18F", face ="bold", family = "Times New Roman"),
+        legend.justification = c(1, 0),
+        legend.position = c(0.6, 0.7),
+        legend.direction = "horizontal",
+        axis.text.x = element_text(color = "#DFC18F", family = "Times New Roman",
+                                angle = 45, vjust = 1, hjust = 1),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank()) +
+        guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                  title.position = "top", title.hjust = 0.5))
+
+```
+As it shows above, there are <u>no multicollinearity</u> detected since the highest score available is between <span style="color:#DFC18F">**0.4/-0.4**</span>. 
+
+### Age
+
+```{r, echo = F}
+heart_age <- heart %>% 
+  select(Age) %>% 
+  pivot_longer(
+  Age,
+  names_to = "name")
+print(paste0("Skewness :", round(skewness(heart_age$value),2)))
+print(paste0("Kurtosis :", round(kurtosis(heart_age$value),2)))
+```
+```{r}
+heart_age <- heart %>% 
+  select(Age) %>% 
+  pivot_longer(
+  Age,
+  names_to = "name")
+
+linear_gradient <- htmlwidgets::JS(
+  "new echarts.graphic.LinearGradient(
+    0, 0, 0, 1,
+    [
+      { offset: 0, color: '#D76662' },
+      { offset: 1, color: '#862421' }
+    ])"
+)
+
+linear_gradient2 <- htmlwidgets::JS(
+  "new echarts.graphic.LinearGradient(
+    0, 0, 0, 1,
+    [
+      { offset: 0, color: '#FFE5DB' },
+      { offset: 1, color: '#E08F83' }
+    ])"
+)
+
+
+heart_age1 <- heart_age %>% 
+  e_charts() %>%
+  e_boxplot(value, outliers = T, name = "Age",
+            boxWidth = c(50, 150),
+            itemStyle = list(color = linear_gradient,
+                             borderColor = linear_gradient2,
+                             borderType = "dashed"),
+            animationDuration = 2000) %>% 
+  e_title(text = "Summary",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic",
+            fontFamily = "Cardo",
+            fontSize = 22
+          ),
+          right = "10%",
+          left = "40%",
+          top = "1%") %>% 
+  e_x_axis(axisLabel = list(color = "#2C343C"),
+           axisLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_y_axis(axisLabel = list(fontFamily = "Cardo", color = "#DFC18F"), 
+           splitLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_color(background = "#2C343C") %>% 
+  e_tooltip(trigger = "axis",
+            axisPointer = list(
+              type = "line",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              lineStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            textStyle = list(
+              fontFamily = "Cardo",
+              color = "#DFC18F"),
+            backgroundColor = "#2C343C",
+            borderColor = "#2C343C",
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#D76662;'>Age</strong>
+                                                    <br/><strong style='color:White;'>Max:</strong> 77
+                                                    <br/><strong style='color:White;'>Q3:</strong> 60
+                                                    <br/><strong style='color:White;'>Median:</strong> 54
+                                                    <br/><strong style='color:White;'>Q1:</strong> 47
+                                                    <br/><strong style='color:White;'>Min:</strong> <strong style='color:#D76662;'>28</strong>
+                                                    <br/><strong style='color:White;'>Mean:</strong> 53.51`
+                                        }  "))
+
+
+heart_age2 <- heart_age %>% 
+  e_charts()  %>% 
+  e_histogram(value, 
+              legend = F,
+              areaStyle = list(opacity = .4,
+                               color = linear_gradient2),
+              itemStyle = list(color = linear_gradient2)) %>% 
+  e_density(value, 
+            areaStyle = list(opacity = .4,
+                             color = linear_gradient),
+            itemStyle = list(color = linear_gradient,
+                             borderType = "dashed"),
+            y_index = 1,
+            legend = F) %>% 
+  e_title(text = "Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_theme_custom("rangga1.json") %>%
+  e_animation(duration = 2000) %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  "))
+
+hw_grid(heart_age1, heart_age2)
+```
+
+★ The distribution of patient `Age` is quite <u>normal</u> since the curve bear resemblance to a bell curve.
+
+★ **Skewness** and **Kurtosis** are adjacent to <span style="color:#DFC18F">**0**</span> and <span style="color:#DFC18F">**3**</span> _respectively_.
+
+### Resting Blood Pressure
+
+```{r, echo = F}
+heart_rbp <- heart %>% 
+  select(RestingBP) %>% 
+  pivot_longer(
+  RestingBP,
+  names_to = "name")
+print(paste0("Skewness :", round(skewness(heart_rbp$value),2)))
+print(paste0("Kurtosis :", round(kurtosis(heart_rbp$value),2)))
+```
+```{r}
+heart_rbp <- heart %>% 
+  select(RestingBP) %>% 
+  pivot_longer(
+  RestingBP,
+  names_to = "name")
+
+heart_rbp1 <- heart_rbp %>% 
+  e_charts() %>%
+  e_boxplot(value, outliers = F, name = "RBP",
+            boxWidth = c(50, 150),
+            itemStyle = list(color = linear_gradient,
+                             borderColor = linear_gradient2,
+                             borderType = "dashed"),
+            animationDuration = 2000) %>% 
+  e_title(text = "Summary",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic",
+            fontFamily = "Cardo",
+            fontSize = 22
+          ),
+          right = "10%",
+          left = "40%",
+          top = "1%") %>% 
+  e_x_axis(axisLabel = list(color = "#2C343C"),
+           axisLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_y_axis(axisLabel = list(fontFamily = "Cardo",
+                            color = "#DFC18F"), 
+           splitLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_color(background = "#2C343C") %>% 
+  e_tooltip(trigger = "axis",
+            axisPointer = list(
+              type = "line",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              lineStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            textStyle = list(
+              fontFamily = "Cardo",
+              color = "#DFC18F"),
+            backgroundColor = "#2C343C",
+            borderColor = "#2C343C",
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#D76662;'>Blood Pressure</strong>
+                                                    <br/><strong style='color:White;'>Max:</strong> 200.0
+                                                    <br/><strong style='color:White;'>Q3:</strong> 140.0
+                                                    <br/><strong style='color:White;'>Median:</strong> 130.0
+                                                    <br/><strong style='color:White;'>Q1:</strong> 120.0
+                                                    <br/><strong style='color:White;'>Min:</strong> <strong style='color:#D76662;'>53.51</strong>
+                                                    <br/><strong style='color:White;'>Mean:</strong> 132.4`
+                                        }  "))
+
+
+heart_rbp2 <- heart_rbp %>% 
+  e_charts()  %>% 
+  e_histogram(value, 
+              legend = F,
+              areaStyle = list(opacity = .4,
+                               color = linear_gradient2),
+              itemStyle = list(color = linear_gradient2)) %>% 
+  e_density(value, 
+            areaStyle = list(opacity = .4,
+                             color = linear_gradient),
+            itemStyle = list(color = linear_gradient),
+            y_index = 1,
+            legend = F) %>% 
+  e_title(text = "Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_theme_custom("rangga1.json") %>%
+  e_animation(duration = 2000) %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Blood Pressure:</strong> ${params.value[0]}mm/hg
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  "))
+
+hw_grid(heart_rbp1, heart_rbp2)
+```
+
+★ The distribution of patient `RestingBP` shows <u>highly right skewed</u> charts.
+
+★ <u>Majority of the patient's Blood Pressure</u> are between <span style="color:#DFC18F">110mm/hg - 150mm/hg</span>.
+
+★ This might be because there's a <u>outliers</u> within `RestingBP` values <span style="color:#DFC18F">0mm/hg - 60mm/hg</span>.
+
+★ **Skewness** are adjacent to <span style="color:#DFC18F">**0**</span> while **Kurtosis** are not adjacent to <span style="color:#DFC18F">**3**</span>.
+
+
+### Cholesterol
+
+```{r, echo = F}
+heart_chol <- heart %>% 
+  select(Cholesterol) %>% 
+  pivot_longer(
+  Cholesterol,
+  names_to = "name")
+print(paste0("Skewness :", round(skewness(heart_chol$value),2)))
+print(paste0("Kurtosis :", round(kurtosis(heart_chol$value),2)))
+```
+
+```{r}
+heart_chol <- heart %>% 
+  select(Cholesterol) %>% 
+  pivot_longer(
+  Cholesterol,
+  names_to = "name")
+
+heart_chol1 <- heart_chol %>% 
+  e_charts() %>%
+  e_boxplot(value, outliers = F, name = "Cholesterol",
+            boxWidth = c(50, 150),
+            itemStyle = list(color = linear_gradient,
+                             borderColor = linear_gradient2,
+                             borderType = "dashed"),
+            animationDuration = 2000) %>% 
+  e_title(text = "Summary",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic",
+            fontFamily = "Cardo",
+            fontSize = 22
+          ),
+          right = "10%",
+          left = "40%",
+          top = "1%") %>% 
+  e_x_axis(axisLabel = list(color = "#2C343C"),
+           axisLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_y_axis(axisLabel = list(fontFamily = "Cardo",
+                            color = "#DFC18F"), 
+           splitLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_color(background = "#2C343C") %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "line",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              lineStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            textStyle = list(
+              fontFamily = "Cardo",
+              color = "#DFC18F"),
+            backgroundColor = "#2C343C",
+            borderColor = "#2C343C",
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#D76662;'>Cholesterol</strong>
+                                                    <br/><strong style='color:White;'>Max:</strong> 603.0
+                                                    <br/><strong style='color:White;'>Q3:</strong> 267.0
+                                                    <br/><strong style='color:White;'>Median:</strong> 223.0
+                                                    <br/><strong style='color:White;'>Q1:</strong> 173.2
+                                                    <br/><strong style='color:White;'>Min:</strong> <strong style='color:#D76662;'>0.0</strong>
+                                                    <br/><strong style='color:White;'>Mean:</strong> 198.8`
+                                        }  "))
+
+
+heart_chol2 <- heart_chol %>% 
+  e_charts()  %>% 
+  e_histogram(value, 
+              legend = F,
+              areaStyle = list(opacity = .4,
+                               color = linear_gradient2),
+              itemStyle = list(color = linear_gradient2)) %>% 
+  e_density(value, 
+            areaStyle = list(opacity = .4,
+                             color = linear_gradient),
+            itemStyle = list(color = linear_gradient),
+            y_index = 1,
+            legend = F) %>% 
+  e_title(text = "Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_theme_custom("rangga1.json") %>%
+  e_animation(duration = 2000) %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Chol:</strong> ${params.value[0]}mg/dL
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  "))
+
+hw_grid(heart_chol1, heart_chol2)
+```
+
+★ The data distribution of patient `Cholesterol` shows <u>highly left skewed</u> charts. 
+
+★ Moreover, there are so many **low values** (below <span style="color:#DFC18F">100mg/dL</span>) and also **0 values**. 
+
+★ This means there are missing values and also outliers within the `Cholesterol` data.
+
+For a better understanding, here are the `Cholesterol` thresholds:
+ 
+* Less than <span style="color:#DFC18F">100 mg/dL</span>: <span style="color:#FFE5DB">**Optimal**</span>.
+* <span style="color:#DFC18F">100-129 mg/dL</span>: <span style="color:#FFE5DB">**Near or above optimal**</span>.
+* <span style="color:#DFC18F">130-159 mg/dL</span>: <span style="color:#FFE5DB">**Borderline high**</span>.
+* <span style="color:#DFC18F">160-189 mg/dL</span>: <span style="color:#FFE5DB">**High**</span>.
+* <span style="color:#DFC18F">190 mg/dL</span> and above: <span style="color:#FFE5DB">**Very high**</span>.
+
+Based on the plot above, the highest frequency transpired from the range <span style="color:#DFC18F">**190 - 275 mg/dL**</span>. This implies that majority of patients are having a `Cholesterol` problem.
+
+### Max. Heart Rate
+
+```{r, echo = F}
+heart_MaxHR <- heart %>% 
+  select(MaxHR) %>% 
+  pivot_longer(
+  MaxHR,
+  names_to = "name")
+print(paste0("Skewness :", round(skewness(heart_MaxHR$value),2)))
+print(paste0("Kurtosis :", round(kurtosis(heart_MaxHR$value),2)))
+```
+
+```{r}
+heart_MaxHR <- heart %>% 
+  select(MaxHR) %>% 
+  pivot_longer(
+  MaxHR,
+  names_to = "name")
+
+heart_MaxHR1 <- heart_MaxHR %>% 
+  e_charts() %>%
+  e_boxplot(value, outliers = F, name = "Max Heart Rate",
+            boxWidth = c(50, 150),
+            itemStyle = list(color = linear_gradient,
+                             borderColor = linear_gradient2,
+                             borderType = "dashed"),
+            animationDuration = 2000) %>% 
+  e_title(text = "Summary",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic",
+            fontFamily = "Cardo",
+            fontSize = 22
+          ),
+          right = "10%",
+          left = "40%",
+          top = "1%") %>% 
+  e_x_axis(axisLabel = list(color = "#2C343C"),
+           axisLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_y_axis(axisLabel = list(fontFamily = "Cardo",
+                            color = "#DFC18F"), 
+           splitLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_color(background = "#2C343C") %>% 
+  e_tooltip(trigger = "axis",
+            axisPointer = list(
+              type = "line",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              lineStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            textStyle = list(
+              fontFamily = "Cardo",
+              color = "#DFC18F"),
+            backgroundColor = "#2C343C",
+            borderColor = "#2C343C",
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#D76662;'>Heart Rate</strong>
+                                                    <br/><strong style='color:White;'>Max:</strong> 202.0
+                                                    <br/><strong style='color:White;'>Q3:</strong> 156.0
+                                                    <br/><strong style='color:White;'>Median:</strong> 138.0 
+                                                    <br/><strong style='color:White;'>Q1:</strong> 120.0
+                                                    <br/><strong style='color:White;'>Min:</strong> <strong style='color:#D76662;'>60.0</strong>
+                                                    <br/><strong style='color:White;'>Mean:</strong> 136.8`
+                                        }  ")) 
+
+
+heart_MaxHR2 <- heart_MaxHR %>% 
+  e_charts()  %>% 
+  e_histogram(value, 
+              legend = F,
+              areaStyle = list(opacity = .4,
+                               color = linear_gradient2),
+              itemStyle = list(color = linear_gradient2)) %>% 
+  e_density(value, 
+            areaStyle = list(opacity = .4,
+                             color = linear_gradient),
+            itemStyle = list(color = linear_gradient),
+            y_index = 1,
+            legend = F) %>% 
+  e_title(text = "Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_theme_custom("rangga1.json") %>%
+  e_animation(duration = 2000) %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Heart Rate:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  "))
+
+hw_grid(heart_MaxHR1, heart_MaxHR2)
+```
+
+★ The data distribution for `MaxHR` variable is <u>quite normal</u> since the curve bear resemblance to a bell curve. 
+
+★ **Skewness** and **Kurtosis** are adjacent to <span style="color:#DFC18F">**0**</span> and <span style="color:#DFC18F">**3**</span> _respectively_.
+
+### Oldpeak
+
+```{r, echo = F}
+heart_old <- heart %>% 
+  select(Oldpeak) %>% 
+  pivot_longer(
+  Oldpeak,
+  names_to = "name")
+print(paste0("Skewness :", round(skewness(heart_old$value),2)))
+print(paste0("Kurtosis :", round(kurtosis(heart_old$value),2)))
+```
+
+```{r}
+heart_old <- heart %>% 
+  select(Oldpeak) %>% 
+  pivot_longer(
+  Oldpeak,
+  names_to = "name")
+
+heart_old1 <- heart_old %>% 
+  e_charts() %>%
+  e_boxplot(value, outliers = F, name = "Oldpeak",
+            boxWidth = c(50, 150),
+            itemStyle = list(color = linear_gradient,
+                             borderColor = linear_gradient2,
+                             borderType = "dashed"),
+            animationDuration = 2000) %>% 
+  e_title(text = "Summary",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic",
+            fontFamily = "Cardo",
+            fontSize = 22
+          ),
+          right = "10%",
+          left = "40%",
+          top = "1%") %>% 
+  e_x_axis(axisLabel = list(color = "#2C343C"),
+           axisLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_y_axis(axisLabel = list(fontFamily = "Cardo", color = "#DFC18F"), 
+           splitLine = list(
+             lineStyle = list(
+               color = "#333D47"
+             )
+           )) %>% 
+  e_color(background = "#2C343C") %>% 
+  e_tooltip(trigger = "axis",
+            axisPointer = list(
+              type = "line",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              lineStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            textStyle = list(
+              fontFamily = "Cardo",
+              color = "#DFC18F"),
+            backgroundColor = "#2C343C",
+            borderColor = "#2C343C",
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#D76662;'>Oldpeak</strong>
+                                                    <br/><strong style='color:White;'>Max:</strong> 6.2000 
+                                                    <br/><strong style='color:White;'>Q3:</strong> 1.5000
+                                                    <br/><strong style='color:White;'>Median:</strong> 0.6000 
+                                                    <br/><strong style='color:White;'>Q1:</strong> 0.0000
+                                                    <br/><strong style='color:White;'>Min:</strong> <strong style='color:#D76662;'>-2.6000</strong>
+                                                    <br/><strong style='color:White;'>Mean:</strong> 0.8874`
+                                        }  "))
+
+
+heart_old2 <- heart_old %>% 
+  e_charts()  %>% 
+  e_histogram(value, 
+              legend = F,
+              areaStyle = list(opacity = .4,
+                               color = linear_gradient2),
+              itemStyle = list(color = linear_gradient2)) %>% 
+  e_density(value, 
+            areaStyle = list(opacity = .4,
+                             color = linear_gradient),
+            itemStyle = list(color = linear_gradient),
+            y_index = 1,
+            legend = F) %>% 
+  e_title(text = "Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_theme_custom("rangga1.json") %>%
+  e_animation(duration = 2000) %>% 
+  e_tooltip(axis = "trigger",
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#2C343C",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = linear_gradient2
+              )
+            ),
+            formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Oldpeak:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  "))
+
+hw_grid(heart_old1, heart_old2)
+```
+
+★ The data distribution of patient `Oldpeak` shows <u>highly left skewed</u> charts. 
+
+★ **Skewness** and **Kurtosis** are not adjacent to <span style="color:#DFC18F">**0**</span> and <span style="color:#DFC18F">**3**</span> _respectively_.
+
+### {-}
+
+# Bivariate Analysis
+
+The purpose of bivariate analysis is to understand the relationship between two variables. The bivariate analysis involves the analysis of two variables, <span style="color:#FFE5DB">**X**</span>: _independent/explanatory/outcome_ variable and <span style="color:#FFE5DB">**Y**</span>: _dependent/outcome variable_, to determine the relationship between them. In this part, we are going to separate our analysis again based on their types. But berfore that, we will see our target variable distribution first.
+
+```{r}
+heart_heart <- heart %>% 
+  select(HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease) %>% 
+  summarize(count = n()) %>% 
+  ungroup()
+
+heart_heart %>% 
+  e_charts(x = HeartDisease) %>% 
+  e_pie(count,
+        roseType = "radius",
+        itemStyle = list(
+          borderRadius = 1,
+          color = htmlwidgets::JS("
+          function(params) {
+                                var colorList = [new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FFE5DB' },
+                                                 { offset: 1, color: '#E08F83' }
+                                                ]),
+                                                new echarts.graphic.LinearGradient(
+                                                 0, 0, 0, 1,
+                                                [
+                                                 { offset: 0, color: '#FB6A63' },
+                                                 { offset: 1, color: '#B83F3E' }
+                                                ])];
+                                return colorList[params.dataIndex]
+                                }
+                                
+    ")),
+        radius = c("25%", "70%"), 
+        legend= FALSE, 
+        label = list(
+          color = "#DFC18F",
+          fontFamily = "Cardo",
+          fontSize = 14
+        ),
+        animationDuration = 4000) %>% 
+  e_title(text = "Heart Disease Distribution",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%",
+          top = "1%") %>% 
+  e_tooltip(formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:White;'>Count:</strong> ${params.value}
+                                                    <br/><strong style='color:White;'>Percent:</strong> ${params.percent}%`
+                                        }  ")) %>% 
+  e_theme_custom("rangga1.json")
+```
+
+★ The are more patients who have a **Heart Disease condition** (<span style="color:#DFC18F">55%</span>) are <u>bigger</u> than the people who are **not** (<span style="color:#DFC18F">45%</span>). 
+
+★ However, the class proportion itself is still categorized as <u>balanced</u>, since the differences between them are no more than 15%.
+
+## A. Categorical Variables based on Target Variable {.tabset .tabset-fade .tabset-pills}
+
+### Chest Pain
+
+```{r}
+heart_cp1 <- heart %>% 
+  select(ChestPainType, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         ChestPainType = as.factor(ChestPainType)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(ChestPainType, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_cp1 %>% 
+  e_charts(ChestPainType) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by Chest Pain Type:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "47%",
+          top = "1%") %>% 
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "66%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ Surprisingly, the patients who have a **Heart Disease condition** are mostly with <span style="color:#FFE5DB">**No Symptoms**</span> `ChestPainType`.
+
+★ This might be many of the **Heart Disease condition** are caused by another factors. (Which we'll find out later)
+
+### Gender
+
+```{r}
+heart_sex1 <- heart %>% 
+  select(Sex, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         Sex = as.factor(Sex)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(Sex, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_sex1 %>% 
+  e_charts(Sex) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by Gender:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "46%",
+          top = "1%") %>%   
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "61%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ <span style="color:#FFE5DB">**Male**</span> have a <u>higher risk</u> of having **Heart Disease Condition** rather than <span style="color:#FFE5DB">**Female**</span> and **not having Heart Disease Condition**.
+
+### Fasting Blood Sugar
+
+```{r}
+heart_fb1 <- heart %>% 
+  select(FastingBS, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         FastingBS = as.factor(FastingBS)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(FastingBS, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_fb1 %>% 
+  e_charts(FastingBS) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by Fasting Blood Sugar:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "46%",
+          top = "1%") %>%   
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "67%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ Patients with `Fasting Blood Sugar` above <span style="color:#DFC18F">120mg/dL</span> are <span style="color:#DFC18F">80%</span> more affected with *Heart Disease Condition* rather than **not**.
+
+★ While patients below <span style="color:#DFC18F">120mg/dL</span> probability of *Heart Disease Condition* are pretty even.
+
+### Resting ECG
+
+```{r}
+heart_ecg1 <- heart %>% 
+  select(RestingECG, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         RestingECG = as.factor(RestingECG)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(RestingECG, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_ecg1 %>% 
+  e_charts(RestingECG) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by Resting ECG:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "47%",
+          top = "1%") %>%   
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "65%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ The **Heart Disease** probability of patients with <span style="color:#FFE5DB">**Normal**</span> `RestingECG` result are pretty even.
+
+★ While patients with <span style="color:#FFE5DB">**ST** & **LVH**</span> results are having higher risk of **Heart Disease**.
+
+### Exercise Angina
+
+```{r}
+heart_ang1 <- heart %>% 
+  select(ExerciseAngina, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         ExerciseAngina = as.factor(ExerciseAngina)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(ExerciseAngina, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_ang1 %>% 
+  e_charts(ExerciseAngina) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by Exercise Angina:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "46%",
+          top = "1%") %>%   
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "65%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ Patients with `ExerciseAngina` condition are <span style="color:#DFC18F">85%</span> more vulnerable of **Heart Disease condition**.
+
+★ While patients without `ExerciseAngina` condition are relatively <span style="color:#DFC18F">62%</span> more safer from **Heart Disease condition**.
+
+### ST Slope
+
+```{r}
+heart_st1 <- heart %>% 
+  select(ST_Slope, HeartDisease) %>%
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes"),
+         ST_Slope = as.factor(ST_Slope)) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  count(ST_Slope, HeartDisease) %>% 
+  group_by(HeartDisease) 
+
+heart_st1 %>% 
+  e_charts(ST_Slope) %>% 
+  e_bar(n, stack = T) %>% 
+  e_tooltip(
+    trigger = "axis",
+    axisPointer = list(
+      type = "shadow"
+    )
+  ) %>% 
+  e_title(text = "Heart Disease by ST Slope:",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "47%",
+          top = "1%") %>%   
+  e_y_axis(
+    splitArea = list(show = FALSE),
+    splitLine = list(show = FALSE)
+  ) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "63%",
+    top = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  ) %>% 
+  e_flip_coords()
+```
+
+★ It is interesting that patients with <span style="color:#FFE5DB">**Flat**</span> `ST Slope` (which considered as <u>normal results</u>) are the ones who are highly affected with **Heart Disease condition**.
+
+★ Meanwhile patients with <span style="color:#FFE5DB">**Downslopping**</span> `ST Slope` (which associated with an <u>increased risk of coronary artery disease</u>) are the ones who relatively safer from **Heart Disease condition**.
+
+★ This might be many of the **Heart Disease condition** are caused by another factors. (Which we'll find out later)
+
+### {-}
+
+## B. Numerical Variables based on Target Variable {.tabset .tabset-fade .tabset-pills}
+
+### Age
+
+```{r}
+heart_age3 <- heart %>% 
+  select(Age, HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease, Age) %>% 
+  summarize(count = n(), .groups = 'drop') %>% 
+  pivot_wider(names_from = HeartDisease, values_from = count) %>% 
+  mutate_if(is.integer, ~replace(., is.na(.), 0))
+
+linear_gradient <- htmlwidgets::JS(
+  "new echarts.graphic.LinearGradient(
+    0, 0, 0, 1,
+    [
+      { offset: 0, color: '#B83F3E' },
+      { offset: 1, color: '#FB6A63' }
+    ])"
+)
+
+linear_gradient2 <- htmlwidgets::JS(
+  "new echarts.graphic.LinearGradient(
+    0, 0, 0, 1,
+    [
+      { offset: 0, color: '#E08F83' },
+      { offset: 1, color: '#FFE5DB' }
+    ])"
+)
+
+heart_age3 %>% 
+  e_charts(Age) %>% 
+    e_line(Yes,
+         smooth = T,
+         itemStyle = list(
+           opacity = 0.5,
+           color = linear_gradient),
+         areaStyle = list(
+           opcaity = 1,
+           color = linear_gradient),
+         emphasis = list(
+           focus = "series")) %>% 
+  e_line(No,
+         smooth = T,
+         itemStyle = list(
+           opacity = 0.5,
+           color = linear_gradient2),
+         areaStyle = list(
+           opcaity = 1,
+           color = linear_gradient2),
+         emphasis = list(
+           focus = "series")) %>% 
+  e_x_axis(name = "Age",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = 27) %>%
+  e_y_axis(name = "Freq",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>% 
+  e_title(text = "Heart Disease by Age",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>% 
+  e_tooltip(axis = "trigger",
+            showDelay = 0,
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#333D47",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = "#DFC18F"
+              )),
+              formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#DFC18F;'>Heart Disease:</strong> <strong style='color:#D76662;'>${params.seriesName}</strong>
+                                                    <br/><strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Count:</strong> ${params.value[1]}`
+                                        }  ")) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "45%",
+    bottom = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  )
+```
+★ Patients with **Heart Disease Condition** tend to have <u>higher</u> `Age`.
+
+★ Patients with **Heart Disease Condition** tend to <u>grouped up</u> within `Age` of <span style="color:#DFC18F">50 - 70 years old</span>.
+
+★ Highest count of **Heart Disease Condition** recorded are within <span style="color:#DFC18F">58 years old</span>.
+
+### Resting Blood Pressure
+
+```{r}
+max <- list(
+  name = "Max",
+  type = "max"
+)
+
+min <- list(
+  name = "Min",
+  type = "min"
+)
+
+avg <- list(
+  type = "average",
+  name = "AVG"
+)
+
+heart_rbp3 <- heart %>% 
+  select(RestingBP, Age, HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease)
+
+heart_rbp3 %>% 
+  e_charts(Age) %>% 
+  e_scatter(RestingBP, HeartDisease,
+            emphasis = list(
+              focus = "series"
+            )) %>%
+  e_theme_custom("rangga2.json") %>% 
+  e_x_axis(name = "Age",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = 27) %>% 
+  e_y_axis(name = "RestingBP",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>%
+  e_mark_area(data = list(
+                          list(xAxis = "min", yAxis = "min"), 
+                          list(xAxis = "max", yAxis = "max")
+                          ),
+              itemStyle = list(
+                color = "transparent",
+                borderWidth = 1,
+                borderType = "dashed")) %>% 
+  e_mark_line(data = avg,
+              lineStyle = list(
+                type = "solid"
+              )) %>% 
+  e_title(text = "Heart Disease: RestingBP vs. Age",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>%   
+  e_tooltip(axis = "trigger",
+            showDelay = 0,
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#333D47",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = "#DFC18F"
+              )),
+              formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#DFC18F;'>Heart Disease:</strong> <strong style='color:#D76662;'>${params.seriesName}</strong>
+                                                    <br/><strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>RestingBP:</strong> ${params.value[1]}mm/hg`
+                                        }  ")) %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "45%",
+    bottom = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  )
+```
+
+★ Patients with **Heart Disease Condition** tend to have <u>higher</u> `RestingBP`.
+
+★ Moreover, if you look at the highest scores of `RestingBP`, all of them have **Heart Disease Condition**
+
+★ There is `RestingBP` with <span style="color:#DFC18F">0mm/hg</span> value which indicates that this is an <u>outlier</u>.
+
+### Cholesterol
+
+```{r}
+heart_chol3 <- heart %>% 
+  select(Cholesterol, Age, HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease)
+
+heart_chol3 %>% 
+  e_charts(Age) %>% 
+  e_scatter(Cholesterol, HeartDisease,
+            emphasis = list(
+              focus = "series"
+            )) %>%
+  e_theme_custom("rangga2.json") %>% 
+  e_x_axis(name = "Age",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = 27) %>% 
+  e_y_axis(name = "Cholesterol",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>%
+  e_mark_area(data = list(
+                          list(xAxis = "min", yAxis = "min"), 
+                          list(xAxis = "max", yAxis = "max")
+                          ),
+              itemStyle = list(
+                color = "transparent",
+                borderWidth = 1,
+                borderType = "dashed")) %>% 
+  e_mark_line(data = avg,
+              lineStyle = list(
+                type = "solid"
+              )) %>% 
+  e_title(text = "Heart Disease: Cholesterol vs. Age",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>%   
+  e_tooltip(axis = "trigger",
+            showDelay = 0,
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#333D47",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = "#DFC18F"
+              )),
+              formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#DFC18F;'>Heart Disease:</strong> <strong style='color:#D76662;'>${params.seriesName}</strong>
+                                                    <br/><strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Cholesterol:</strong> ${params.value[1]}mg/dL`
+                                        }  ")) %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "45%",
+    bottom = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  )
+```
+
+★ Patients with **Heart Disease Condition** tend to have <u>lower</u> `Cholesterol` rate.
+
+★ However, this might be caused by <u>uncollected</u> `Cholesterol` rate results, since there are many <u>outliers</u> with values of <span style="color:#DFC18F">0mg/dL</span>.
+
+### Max. Heart Rate
+
+```{r}
+heart_HR3 <- heart %>% 
+  select(MaxHR, Age, HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease)
+
+heart_HR3 %>% 
+  e_charts(Age) %>% 
+  e_scatter(MaxHR, HeartDisease,
+            emphasis = list(
+              focus = "series"
+            )) %>%
+  e_theme_custom("rangga2.json") %>% 
+  e_x_axis(name = "Age",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = 27) %>% 
+  e_y_axis(name = "Max Heart Rate",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>%
+  e_mark_area(data = list(
+                          list(xAxis = "min", yAxis = "min"), 
+                          list(xAxis = "max", yAxis = "max")
+                          ),
+              itemStyle = list(
+                color = "transparent",
+                borderWidth = 1,
+                borderType = "dashed")) %>% 
+  e_mark_line(data = avg,
+              lineStyle = list(
+                type = "solid"
+              )) %>% 
+  e_title(text = "Heart Disease: Max Heart Rate vs. Age",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>%   
+  e_tooltip(axis = "trigger",
+            showDelay = 0,
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#333D47",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = "#DFC18F"
+              )),
+              formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#DFC18F;'>Heart Disease:</strong> <strong style='color:#D76662;'>${params.seriesName}</strong>
+                                                    <br/><strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>MaxHR:</strong> ${params.value[1]}`
+                                        }  ")) %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "45%",
+    bottom = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  )
+```
+
+★ Patients with **Heart Disease Condition** tend to have <u>lower</u> `Max Heart Rate`.
+
+### Oldpeak
+
+```{r}
+heart_old3 <- heart %>% 
+  select(Oldpeak, Age, HeartDisease) %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease)) %>% 
+  group_by(HeartDisease)
+
+heart_old3 %>% 
+  e_charts(Age) %>% 
+  e_scatter(Oldpeak, HeartDisease,
+            emphasis = list(
+              focus = "series"
+            )) %>%
+  e_theme_custom("rangga2.json") %>% 
+  e_x_axis(name = "Age",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = 27) %>% 
+  e_y_axis(name = "Oldpeak",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             ),
+           min = -3,
+           max = 7) %>%
+  e_mark_area(data = list(
+                          list(xAxis = "min", yAxis = "min"), 
+                          list(xAxis = "max", yAxis = "max")
+                          ),
+              itemStyle = list(
+                color = "transparent",
+                borderWidth = 1,
+                borderType = "dashed")) %>% 
+  e_mark_line(data = avg,
+              lineStyle = list(
+                type = "solid"
+              )) %>% 
+  e_title(text = "Heart Disease: Oldpeak vs. Age",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%") %>%   
+  e_tooltip(axis = "trigger",
+            showDelay = 0,
+            axisPointer = list(
+              type = "cross",
+              label = list(
+                backgroundColor = "#333D47",
+                fontFamily = "Cardo",
+                color = "#DFC18F"
+              ),
+              crossStyle = list(
+                color = "#DFC18F"
+              )),
+              formatter = htmlwidgets::JS("
+                                        function(params)
+                                        {
+                                            return `<strong style='color:#DFC18F;'>Heart Disease:</strong> <strong style='color:#D76662;'>${params.seriesName}</strong>
+                                                    <br/><strong style='color:White;'>Age:</strong> ${params.value[0]}
+                                                    <br/><strong style='color:White;'>Oldpeak:</strong> ${params.value[1]}`
+                                        }  ")) %>% 
+  e_legend(
+    orient = "horizontal",
+    right = "10%",
+    left = "45%",
+    bottom = "2%",
+    textStyle = list(
+      color = "#DFC18F"
+    )
+  )
+```
+
+★ Patients with **Heart Disease Condition** tend to have <u>higher</u> `Oldpeak` rate.
+
+★ However, this might be caused by <u>uncollected</u> `Oldpeak` rate results, since there are many <u>outliers</u> with values of <span style="color:#DFC18F">0</span>.
+
+### {-}
+
+# Modelling, Fitting, Predicting. {.tabset .tabset-fade .tabset-pills}
+
+## Logistic Regression
+
+**Logistic regression** is used to descrive data and **the relationship between** <span style="color:#FFE5DB">**one dependent variable** and **one or more independent variables**</span>. The <span style="color:#FFE5DB">**independent variables**</span> can be nominal, ordinal, or of interval type.
+
+**Logistic regression** return value within range of <span style="color:#DFC18F">0,1</span> and not a binary class. Later, we have to <u>classify</u> ourselves the range to convert it to binary class.
+
+This is the equation of a logistic regression model:
+<center>
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+
+
+$$
+log(\frac{p(X)}{1-p(X)}) = B_0 + B_1.X
+$$
+
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+</center>
+
+The left-hand side is called the log-odds or logit. On the right side the b0 is the model intercept and b1 is the coefficient of feature X.
+
+<center>
+<span style="color:#D76662"><u>**CROSS VALIDATION**</u></span>
+</center>
+<br>
+
+Before we go into modelling, we are going to do **Cross Validation** for our dataset first. Why? The **Cross Validation** procedure is used to estimate the performance of machine learning algorithms when they are used to make predictions on unseen data. In this context, we will take <span style="color:#DFC18F">80%</span> of our dataset to <u>train</u> our model and <span style="color:#DFC18F">20%</span> of our dataset to <u>test</u> our prediction to see the model’s performance.
+
+```{r, class.source = "fold-show"}
+heart <- heart %>% 
+  mutate(HeartDisease = case_when(
+    HeartDisease == 0 ~ "No",
+    HeartDisease == 1 ~ "Yes")) %>% 
+  mutate(HeartDisease = as.factor(HeartDisease))
+
+RNGkind(sample.kind = "Rounding")
+set.seed(417)
+index <- sample(nrow(heart), size = nrow(heart)*0.80)
+heart_train <- heart[index,] #take 80%
+heart_test <- heart[-index,] #take 20%
+```
+
+* Re-check **class balance**:
+
+```{r}
+proptrain <- paste(round(prop.table((table(heart_train$HeartDisease)))*100,2),"%")
+proptraindf <- data.frame(HeartDisease = c("No","Yes"), Prop = c(proptrain[1], proptrain[2]))
+rmarkdown::paged_table(proptraindf)
+```
+As shown above, the **proportion** of the class is still <u>balanced</u>.
+
+<center>
+<span style="color:#D76662"><u>**MODELLING**</u></span>
+</center>
+<br>
+
+After we split our data, now we will train our models using the _heart_train_ data. For the <span style="color:#FFE5DB">independent variables</span> (**X**), we are going to use <span style="color:#FFE5DB">all variables</span> first.
+
+```{r, class.source = "fold-show"}
+model_log <- glm(formula = HeartDisease ~ .,
+             family = "binomial",
+             data = heart_train)
+summary(model_log)
+```
+
+<center>
+<span style="color:#D76662"><u>**FITTING**</u></span>
+</center>
+<br>
+
+After our initial modelling, there are still many predictors who <u>are not statistically significant</u> to our <span style="color:#FFE5DB">**target variable**</span>. Because of that, we will do **Fitting** using **stepWise** method.
+
+```{r, class.source = "fold-show"}
+model_logstep <- step(object = model_log,
+                   direction = "backward",
+                   trace = 0)
+
+summary(model_logstep)
+```
+Note we already got rid the <span style="color:#FFE5DB">**unsignificant variables**</span> and also the **AIC scores** has improved from <span style="color:#DFC18F">489</span> to <span style="color:#DFC18F">484.39</span>.
+
+<center>
+<span style="color:#D76662"><u>**PREDICTING**</u></span>
+</center>
+<br>
+
+With our _model_step_ we will predict our _heart_test_ dataset.
+
+```{r}
+heart_test$pred_Risk <- predict(object = model_logstep,
+                                newdata = heart_test,
+                                type = "response")
+
+heart_test %>% 
+  e_charts()  %>% 
+  e_density(pred_Risk, 
+            smooth = T,
+            itemStyle = list(
+              opacity = 0.5,
+              color = linear_gradient),
+            areaStyle = list(
+              opcaity = 1,
+              color = linear_gradient),
+            legend = F) %>% 
+  e_theme_custom("rangga2.json") %>% 
+  e_mark_line(data = list(xAxis=0.5 ), 
+              title = "Threshold",
+              lineStyle = list(
+                color = linear_gradient2
+              )) %>% 
+    e_x_axis(name = "Pred Heart",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>%
+  e_y_axis(name = "Density",
+           nameTextStyle = list(
+             color = "White",
+             fontFamily = "Cardo",
+             fontSize = 14,
+             fontWeight = "bold"
+             )) %>% 
+    e_title(text = "Distribution of Probability Prediction Data",
+          textStyle = list(
+            color = "#DFC18F",
+            fontStyle = "italic"
+          ),
+          right = "10%",
+          left = "50%")
+```
+
+The interpretaion for the graph above is <u>the predictions</u> are augmented towards <span style="color:#DFC18F">1</span> which means more predictions are in favour of **positive Heart Disease Condition** or <span style="color:#FFE5DB">**Yes**</span>.
+
+* Classify our **Probability Prediction Data** with threshold of <span style="color:#DFC18F">0.5</span>:
+
+```{r}
+heart_test$pred_Label <- ifelse(test = heart_test$pred_Risk > 0.5,
+                                yes = "Yes",
+                                no = "No")
+
+rmarkdown::paged_table(heart_test[1:10, c("HeartDisease", "pred_Label", "pred_Risk")])
+```
+
+## K-NN
+
+**The k-nearest neighbors** is non-parametric, supervised learning classifier, which uses proximity to make classifications about the grouping of an individual data point. **K-NN** working off the assumption that similar points can be found near one another. 
+
+This is the equation of K-NN model:
+
+<center>
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+
+
+$$
+d(x,y) = \sqrt {\sum(x_i - y_i)^2}
+$$
+
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+</center>
+
+We will classify using the optimum number of K, which is the square root of the number of train dataset.
+
+<center>
+<span style="color:#D76662"><u>**CROSS VALIDATION**</u></span>
+</center>
+<br>
+K-NN predictor variables have to be in <u>numeric</u> data types. 
+
+```{r, class.source = "fold-show"}
+heart_knn <- heart %>% 
+  select(HeartDisease, Age, RestingBP, Cholesterol, MaxHR)
+
+RNGkind(sample.kind = "Rounding")
+set.seed(123)
+
+# index sampling
+index1 <-  sample(nrow(heart_knn), size = 0.8*nrow(heart_knn))
+  
+# splitting
+heartknn_train <- heart_knn[index1, ]
+heartknn_test <- heart_knn[-index1, ]
+```
+
+* Re-check **class balance**:
+
+```{r}
+proptraink <- paste(round(prop.table((table(heartknn_train$HeartDisease)))*100,2),"%")
+proptrainkdf <- data.frame(HeartDisease = c("No","Yes"), Prop = c(proptraink[1], proptraink[2]))
+rmarkdown::paged_table(proptrainkdf)
+```
+As shown above, the **proportion** of the class is still <u>balanced</u>.
+
+<center>
+<span style="color:#D76662"><u>**DATA PRE-PROCESSING**</u></span>
+</center>
+<br>
+
+For **K-NN** we have to separate the <span style="color:#FFE5DB">**one dependent variable** from **one or more independent variables**</span>.
+
+```{r, class.source = "fold-show"}
+heartknn_train_x <- select(heartknn_train, -HeartDisease)
+heartknn_test_x <- select(heartknn_test, -HeartDisease)
+
+heartknn_train_y <- heartknn_train %>% select(HeartDisease)
+heartknn_test_y <- heartknn_test %>% select(HeartDisease)
+```
+
+<center>
+<span style="color:#D76662"><u>**SCALING**</u></span>
+</center>
+<br>
+
+Our <span style="color:#FFE5DB">**independent variables**/**predictors**</span> will be scaled using _Z-score standarization_ since all of our data range should be in the <u>same range</u>. Here is the equation:
+
+<center>
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+$$Z = \frac{x-mean}{sd}$$
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+</center>
+
+* Here's how to do it in <span style="color:Blue">R</span>.
+
+```{r, class.source = "fold-show"}
+heart_train_x_scale <- scale(x = heartknn_train_x)
+
+heart_test_x_scale <- scale(x = heartknn_test_x,
+                           center = attr(heart_train_x_scale, "scaled:center"),
+                           scale  = attr(heart_train_x_scale, "scaled:scale"))
+```
+
+<center>
+<span style="color:#D76662"><u>**PREDICTING**</u></span>
+</center>
+<br>
+
+In **K-NN** we don't have to do any **Modeling** since we can just go straight **Predicting**. But first, we have to find the _optimum K_ of our train data.
+
+```{r, class.source = "fold-show"}
+sqrt(nrow(heartknn_train))
+```
+As shown above, our _optimum K_ is <span style="color:#DFC18F">27</span>.
+
+* **Predict**
+
+```{r, class.source = "fold-show"}
+heartknn_pred <- knn(train = heart_train_x_scale,
+                 test = heart_test_x_scale,
+                 cl = heartknn_train_y$HeartDisease, 
+                 k = 27)
+
+```
+
+## {-}
+
+# Evaluation {.tabset .tabset-fade .tabset-pills}
+
+For <span style="color:#DFC18F">**Evaluation**</span>, we are going to use **confusionMatrix** and **ROC/AUC** function that can generate:
+
+<center>
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+</center>
+
+<center>
+<span style="color:#D76662">**Accuracy**</span>:
+$$
+\frac {TP + TN} {TP + TN + FP + FN}
+$$
+</center>
+
+<center>
+<span style="color:#D76662">**Sensitivity**</span>:
+$$
+\frac {TP} {TP + FN}
+$$
+</center>
+
+<center>
+<span style="color:#D76662">**Specificity**</span>:
+$$
+\frac {TN} {TN + FP}
+$$
+</center>
+
+<center>
+<span style="color:#D76662">**Precision**</span>:
+$$
+\frac {TP} {TP + FP}
+$$
+</center>
+<img src="https://media0.giphy.com/media/jp84qEgJB3F8vl7p1o/giphy.gif?cid=6c09b9524wmka8v4o8yfogiqqypo8xi8b33q3n7dk5of35zl&rid=giphy.gif&ct=s" width="1200" height="50"/>
+</center>
+
+## Logistic Regression
+
+<center>
+<span style="color:#D76662"><u>**EVALUATION SUMMARY**</u></span>
+</center>
+
+```{r}
+con_mat_log <- confusionMatrix(data = as.factor(heart_test$pred_Label), 
+                reference = heart_test$HeartDisease, 
+                positive = "Yes")
+
+performance <- cbind.data.frame(Accuracy = con_mat_log$overall[[1]],
+                                Sensitivity = con_mat_log$byClass[[1]],
+                                Specificity = con_mat_log$byClass[[2]],
+                                Precision = con_mat_log$byClass[[3]])
+
+rmarkdown::paged_table(performance)
+```
+
+```{r, fig.align="center"}
+Actual <- factor(c("No", "No", "Yes", "Yes"))
+Predicted <- factor(c("No", "Yes", "No", "Yes"))
+y      <- c(con_mat_log$table[2], con_mat_log$table[1], con_mat_log$table[4], con_mat_log$table[3])
+df1_log <- data.frame(Actual, Predicted, y)
+
+roc <-  roc(predictor = heart_test$pred_Risk,
+            response = heart_test$HeartDisease,
+            levels = c('Yes','No'),
+            percent = TRUE)
+df2_log <-  data.frame(Specificity=roc$specificities, Sensitivity=roc$sensitivities)
+
+plot_log1 <- ggplot(data =  df1_log, mapping = aes(x = Actual, y = Predicted, col = y)) +
+  geom_tile(aes(fill = y)) +
+  geom_text(aes(label = sprintf("%1.0f", y)), color = "#DFC18F", size = 5, family = "Times New Roman") +
+  scale_fill_gradient(low = "#E08F83", high = "#B8332E") +
+  scale_color_gradient(low = "#E08F83", high = "#B8332E") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        panel.background = element_rect(fill = "#2C343C"),
+        panel.grid = element_line(colour = "#2C343C"),
+        panel.grid.major.x = element_line(colour = "#2C343C"),
+        panel.grid.minor.x = element_line(colour = "#2C343C"),
+        axis.text.x = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.text.y = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.title.x = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.title.y = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.ticks = element_blank())
+
+plot_log2 <- ggplot(data = df2_log, aes(x = Specificity, y = Sensitivity))+
+  with_outer_glow(geom_path(colour = '#FFE5DB', size = 1), colour = "#E08F83", sigma = 10, expand = 1)+
+  scale_x_reverse() +
+  geom_abline(intercept = 100, slope = 1, color="#B8332E", linetype = "longdash") +
+  annotate("text", x = 40, y = 40, label = paste0('AUC: ', round(roc$auc,1), '%'), size = 4, color = "#DFC18F", family = "Times New Roman")+
+  ylab('Sensitivity (%)')+
+  xlab('Specificity (%)')+
+  scale_fill_gradient(low = "#E08F83", high = "#B8332E") +
+  scale_color_gradient(low = "#E08F83", high = "#B8332E") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        panel.background = element_rect(fill = "#2C343C"),
+        panel.grid = element_line(colour = "#2C343C"),
+        panel.grid.major.x = element_line(colour = "#2C343C"),
+        panel.grid.minor.x = element_line(colour = "#2C343C"),
+        axis.text.x = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.text.y = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.title.x = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.title.y = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.ticks = element_blank())
+
+ggarrange(plot_log1, plot_log2, nrow = 2, ncol = 1)
+```
+
+★ Our **logistic regression model** has performance <span style="color:#D76662">accuracy</span> of <span style="color:#DFC18F">83.15%</span> on unseen data. Meaning that <span style="color:#DFC18F">83.15%</span> of <u>our data is correctly classified</u>.
+
+★ The value of <span style="color:#D76662">sensitivity</span> is <span style="color:#DFC18F">87.09%</span> which indicates that most <u>positive outcomes are correctly classified</u>.  
+
+★ The value of <span style="color:#D76662">specificity</span> is <span style="color:#DFC18F">79.12%</span> which indicates that most <u>negative outcomes are correctly classified</u>.
+
+★ The value of <span style="color:#D76662">precision</span> is <span style="color:#DFC18F">81%</span> which indicates that <span style="color:#DFC18F">81%</span> of our <u>positive prediction is correct</u>.
+
+★ Our <span style="color:#D76662">ROC Curve</span> also shows a very good separation with <span style="color:#D76662">AUC</span> score of <span style="color:#DFC18F">91.5%</span>. Meaning that our model is proven to be near excellent at separating our <span style="color:#FFE5DB">**target classes**</span>. 
+
+## K-NN
+
+<center>
+<span style="color:#D76662"><u>**EVALUATION SUMMARY**</u></span>
+</center>
+
+```{r}
+con_mat_knn <- confusionMatrix(data = as.factor(heartknn_pred), 
+                reference = heartknn_test_y$HeartDisease, 
+                positive = "Yes")
+
+performanceknn <- cbind.data.frame(Accuracy = con_mat_knn$overall[[1]],
+                                Sensitivity = con_mat_knn$byClass[[1]],
+                                Specificity = con_mat_knn$byClass[[2]],
+                                Precision = con_mat_knn$byClass[[3]])
+
+rmarkdown::paged_table(performanceknn)
+```
+```{r, fig.align="center"}
+Actual1 <- factor(c("No", "No", "Yes", "Yes"))
+Predicted1 <- factor(c("No", "Yes", "No", "Yes"))
+y1      <- c(con_mat_knn$table[2], con_mat_knn$table[1], con_mat_knn$table[4], con_mat_knn$table[3])
+df1_knn <- data.frame(Actual1, Predicted1, y1)
+
+dfdf <- data.frame(Pred = heartknn_pred)
+dfdf <- dfdf %>% 
+  mutate(Pred = case_when(
+    Pred == "Yes"~1,
+    Pred == "No"~0
+  ))
+
+roc1 <-  roc(predictor = dfdf$Pred,
+            response = heartknn_test_y$HeartDisease,
+            levels = c('Yes','No'),
+            percent = TRUE)
+df2_knn <-  data.frame(Specificity=roc1$specificities, Sensitivity=roc1$sensitivities)
+
+plot_knn1 <- ggplot(data =  df1_knn, mapping = aes(x = Actual1, y = Predicted1, col = y1)) +
+  geom_tile(aes(fill = y1)) +
+  geom_text(aes(label = sprintf("%1.0f", y1)), color = "#DFC18F", size = 5, family = "Times New Roman") +
+  scale_fill_gradient(low = "#E08F83", high = "#B8332E") +
+  scale_color_gradient(low = "#E08F83", high = "#B8332E") +
+  labs(x = "Actual",
+       y = "Predicted") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        panel.background = element_rect(fill = "#2C343C"),
+        panel.grid = element_line(colour = "#2C343C"),
+        panel.grid.major.x = element_line(colour = "#2C343C"),
+        panel.grid.minor.x = element_line(colour = "#2C343C"),
+        axis.text.x = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.text.y = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.title.x = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.title.y = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.ticks = element_blank())
+
+plot_knn2 <- ggplot(data = df2_knn, aes(x = Specificity, y = Sensitivity))+
+  with_outer_glow(geom_path(colour = '#FFE5DB', size = 1), colour = "#E08F83", sigma = 10, expand = 1)+
+  scale_x_reverse() +
+  geom_abline(intercept = 100, slope = 1, color="#B8332E", linetype = "longdash") +
+  annotate("text", x = 40, y = 40, label = paste0('AUC: ', round(roc1$auc,1), '%'), size = 4, color = "#DFC18F", family = "Times New Roman")+
+  ylab('Sensitivity (%)')+
+  xlab('Specificity (%)')+
+  scale_fill_gradient(low = "#E08F83", high = "#B8332E") +
+  scale_color_gradient(low = "#E08F83", high = "#B8332E") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "#2C343C", color = "#2C343C"),
+        panel.background = element_rect(fill = "#2C343C"),
+        panel.grid = element_line(colour = "#2C343C"),
+        panel.grid.major.x = element_line(colour = "#2C343C"),
+        panel.grid.minor.x = element_line(colour = "#2C343C"),
+        axis.text.x = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.text.y = element_text(color = "#2C343C", family = "Times New Roman", size = 14),
+        axis.title.x = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.title.y = element_text(color = "#DFC18F", family = "Times New Roman", size = 14),
+        axis.ticks = element_blank())
+
+ggarrange(plot_knn1, plot_knn2, nrow = 2, ncol = 1)
+```
+
+★ Our **K-NN model** has performance <span style="color:#D76662">accuracy</span> of <span style="color:#DFC18F">75%</span> on unseen data. Meaning that <span style="color:#DFC18F">75%</span> of <u>our data is correctly classified</u>.
+
+★ The value of <span style="color:#D76662">sensitivity</span> is <span style="color:#DFC18F">82.85%</span> which indicates that most <u>positive outcomes are correctly classified</u>.  
+
+★ The value of <span style="color:#D76662">specificity</span> is <span style="color:#DFC18F">64.55%</span> which indicates that only moderate<u>negative outcomes are correctly classified</u>.
+
+★ The value of <span style="color:#D76662">precision</span> is <span style="color:#DFC18F">75.65%</span> which indicates that <span style="color:#DFC18F">75.65%</span> of our <u>positive prediction is correct</u>.
+
+★ Our <span style="color:#D76662">ROC Curve</span> also shows a moderate performance of separation with <span style="color:#D76662">AUC</span> score of <span style="color:#DFC18F">73.7%</span>. Meaning that our model is proven to be moderately good at separating our <span style="color:#FFE5DB">**target classes**</span>.
+
+## {-}
+
+# Conclusion
+
+Since we're talking about **Health diagnosis prediction**, we want to minimize our error on <u>positive outcomes prediction</u>. Which in our case is about patient with **Heart Disease Condition**. Hereby if we look at our model performance evaluation, we want to use a model with a good score of <span style="color:#D76662">sensitivity</span>.
+
+In that manner, from our 2 models that we've been created, the one who have higher <span style="color:#D76662">sensitivity</span> score is **Logistic Regression** model with a value of <span style="color:#DFC18F">87.09%</span>. So we can conclude that **Logistic Regression** proven to be better for <u>classifying</u> **Heart Disease Condition** rather than **K-NN** model.
+
+Moreover, if we talk about our **Logistic Regression**, here are the <span style="color:#FFE5DB">**independent variables**/**predictors**</span> that are significant for <u>classifying</u> **Heart Disease Condition**:
+
+* `Age`
+* `Male Gender`
+* `ATA Chest Pain Type`
+* `NAP Chest Pain Type`
+* `NA Chest Pain Type`
+* `Cholesterol`
+* `FastingBS> 120 mg/dl` or `Patient with Diabetes`
+* `Patient with ExerciseAngina`
+* `Oldpeak`
+* `Flat ST Slope`
+* `Up ST Slope`
+
+And that's all my attempt to classify **Heart Disease** with **Classification Models**. As time goes by, I will add more **models** who are not covered yet in this project. However, I sincerely hope that this study could help people who will do some similar cases in the future. 
